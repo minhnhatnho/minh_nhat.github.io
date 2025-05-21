@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tìm Hiểu Về Bệnh Vảy Nến</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // MathJax Configuration
+        window.MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']]
+          },
+          svg: {
+            fontCache: 'global'
+          }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" id="MathJax-script"></script>
+    <!-- Visualization & Content Choices:
+        - Pathophysiology: HTML/CSS diagram for immune cascade (Inform, Organize). Interactive cards for triggers (Inform, Organize).
+        - Lesions: HTML/CSS visuals for skin/nail changes (Inform).
+        - Clinical Forms: Clickable cards for each form (Organize, Inform). Chart.js bar chart for prevalence comparison (Compare, Inform).
+        - Treatment: Accordions for treatment categories (Organize). Chart.js bar chart for conceptual efficacy/risk comparison (Compare, Inform).
+        - Justification: Visuals and interactive elements chosen to simplify complex medical information, make comparisons intuitive, and allow users to drill down into details as needed, supporting the goal of easy exploration and understanding. All visualizations use Chart.js (Canvas) or HTML/CSS.
+        - Library/Method: Chart.js for charts, Vanilla JS for interactions, HTML/CSS/Tailwind for static visuals and layout. MathJax for LaTeX rendering. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .tab-button.active {
+            border-color: #0D9488; /* Tailwind teal-600 */
+            color: #0D9488;
+            font-weight: 600;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px; /* max-w-2xl */
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px; /* h-80 */
+            max-height: 400px; /* max-h-96 */
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            .chart-container {
+                height: 384px; /* h-96 */
+            }
+        }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .accordion-content.open { max-height: 1000px; /* Adjust as needed */ }
+        .stat-card {
+            background-color: #fff;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+        .stat-card-title {
+            font-size: 1rem;
+            color: #4A5568; /* gray-600 */
+            margin-bottom: 0.5rem;
+        }
+        .stat-card-value {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 700;
+            color: #0D9488; /* teal-600 */
+        }
+        .section-intro {
+            font-size: 1.125rem; /* text-lg */
+            line-height: 1.75rem;
+            color: #374151; /* gray-700 */
+            margin-bottom: 1.5rem; /* mb-6 */
+            background-color: #F3F4F6; /* gray-100 */
+            padding: 1rem;
+            border-radius: 0.375rem; /* rounded-md */
+            border-left: 4px solid #0D9488; /* teal-600 */
+        }
+    </style>
+</head>
+<body class="bg-stone-100 text-stone-800">
+
+    <header class="bg-teal-700 text-white p-6 shadow-md">
+        <div class="container mx-auto max-w-6xl">
+            <h1 class="text-3xl font-bold">Bệnh Vảy Nến: Tổng Quan Toàn Diện</h1>
+            <p class="text-sm opacity-90">Khám phá thông tin chi tiết về căn sinh bệnh học, biểu hiện lâm sàng và các phương pháp điều trị.</p>
+        </div>
+    </header>
+
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto max-w-6xl flex justify-center space-x-2 sm:space-x-4 p-3 overflow-x-auto">
+            <button class="tab-button py-2 px-3 sm:px-4 border-b-2 border-transparent hover:border-teal-500 hover:text-teal-500 transition-colors text-sm sm:text-base" onclick="openTab(event, 'tab-home')">Trang Chủ</button>
+            <button class="tab-button py-2 px-3 sm:px-4 border-b-2 border-transparent hover:border-teal-500 hover:text-teal-500 transition-colors text-sm sm:text-base" onclick="openTab(event, 'tab-pathophysiology')">Căn Sinh Bệnh Học</button>
+            <button class="tab-button py-2 px-3 sm:px-4 border-b-2 border-transparent hover:border-teal-500 hover:text-teal-500 transition-colors text-sm sm:text-base" onclick="openTab(event, 'tab-lesions')">Thương Tổn Cơ Bản</button>
+            <button class="tab-button py-2 px-3 sm:px-4 border-b-2 border-transparent hover:border-teal-500 hover:text-teal-500 transition-colors text-sm sm:text-base" onclick="openTab(event, 'tab-forms')">Các Thể Vảy Nến</button>
+            <button class="tab-button py-2 px-3 sm:px-4 border-b-2 border-transparent hover:border-teal-500 hover:text-teal-500 transition-colors text-sm sm:text-base" onclick="openTab(event, 'tab-treatment')">Điều Trị</button>
+        </div>
+    </nav>
+
+    <main class="container mx-auto max-w-6xl p-4 sm:p-6">
+        
+        <div id="tab-home" class="tab-content">
+            <h2 class="text-2xl font-semibold text-teal-700 mb-4">Thông Tin Bệnh Vảy Nến</h2>
+            <p class="section-intro">
+                Phần này cung cấp một cái nhìn tổng quan về bệnh vảy nến, một bệnh viêm da mạn tính ảnh hưởng đến hàng triệu người trên toàn thế giới. Chúng tôi sẽ giới thiệu về bản chất của bệnh, tỷ lệ mắc, và những tác động của nó đến chất lượng cuộc sống, đồng thời phác thảo các nội dung chính bạn có thể tìm thấy trong website này.
+            </p>
+            <div class="bg-white p-6 rounded-lg shadow mb-6">
+                <p class="mb-4">Bệnh vảy nến (psoriasis) là một bệnh viêm da mạn tính, qua trung gian miễn dịch, đặc trưng bởi sự tăng sinh và biệt hóa bất thường của tế bào sừng (keratinocytes). Đây là một bệnh lý không lây nhiễm, có thể gặp ở mọi lứa tuổi nhưng thường xuất hiện ở người lớn từ 20 – 30 tuổi và từ 50 – 60 tuổi.</p>
+                <p class="mb-4">Tầm quan trọng của bệnh vảy nến không chỉ nằm ở các biểu hiện trên da mà còn ở những ảnh hưởng sâu sắc đến chất lượng cuộc sống của người bệnh. Bệnh không chỉ gây khó chịu về thể chất như ngứa, đau mà còn có thể dẫn đến các vấn đề tâm lý như tự ti, lo âu và trầm cảm.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+                    <div class="stat-card">
+                        <div class="stat-card-title">Tỷ lệ mắc toàn cầu (ước tính)</div>
+                        <div class="stat-card-value">2-3%</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-title">Độ tuổi thường khởi phát</div>
+                        <div class="stat-card-value text-xl">20-30 & 50-60</div>
+                    </div>
+                </div>
+                <p>Ứng dụng này sẽ giúp bạn tìm hiểu sâu hơn về:</p>
+                <ul class="list-disc list-inside ml-4 space-y-1 text-stone-700">
+                    <li>Cơ chế phức tạp đằng sau sự phát triển của bệnh.</li>
+                    <li>Các dấu hiệu và triệu chứng đặc trưng trên da và móng.</li>
+                    <li>Sự khác biệt giữa các thể lâm sàng thường gặp.</li>
+                    <li>Các phương pháp điều trị hiện có, từ truyền thống đến hiện đại.</li>
+                </ul>
+            </div>
+             <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-xl font-semibold text-teal-700 mb-3">Mục tiêu học tập</h3>
+                 <p class="mb-2">Sau khi khám phá ứng dụng này, bạn sẽ có thể:</p>
+                <ul class="list-decimal list-inside ml-4 space-y-1 text-stone-700">
+                    <li>Nêu được căn sinh bệnh học của bệnh vảy nến.</li>
+                    <li>Trình bày được các thương tổn cơ bản của bệnh vảy nến.</li>
+                    <li>Nêu được đặc điểm của các thể vảy nến.</li>
+                    <li>Trình bày được các phương pháp điều trị bệnh vảy nến.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="tab-pathophysiology" class="tab-content">
+            <h2 class="text-2xl font-semibold text-teal-700 mb-4">Căn Sinh Bệnh Học Của Bệnh Vảy Nến</h2>
+            <p class="section-intro">
+                Phần này đi sâu vào các cơ chế phức tạp gây ra bệnh vảy nến. Bạn sẽ tìm hiểu về vai trò của hệ thống miễn dịch bị rối loạn, các yếu tố di truyền làm tăng nguy cơ mắc bệnh, và các yếu tố môi trường có thể kích hoạt hoặc làm nặng thêm tình trạng bệnh. Hiểu rõ căn sinh bệnh học là chìa khóa để phát triển các phương pháp điều trị hiệu quả.
+            </p>
+            
+            <div class="space-y-6">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold text-teal-600 mb-3 accordion-trigger cursor-pointer flex justify-between items-center">
+                        <span>A. Vai Trò Của Hệ Miễn Dịch</span>
+                        <span class="arrow transform transition-transform duration-300">▼</span>
+                    </h3>
+                    <div class="accordion-content">
+                        <p class="mb-2">Vảy nến là một bệnh tự miễn, hệ thống miễn dịch tấn công nhầm tế bào da khỏe mạnh. Cả miễn dịch bẩm sinh và mắc phải đều tham gia.</p>
+                        <p class="font-semibold mt-2">Rối loạn chức năng tế bào T:</p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>Tế bào T ($CD4^+$, $CD8^+$) bị hoạt hóa bất thường.</li>
+                            <li>Th17 và Th1 là tế bào gây bệnh chính, di chuyển đến da, giải phóng cytokine.</li>
+                            <li>Cytokine kích thích tế bào sừng (KCs) tăng sinh nhanh (chu kỳ 3-4 ngày thay vì 28-30 ngày), tạo mảng vảy.</li>
+                        </ul>
+                        <p class="font-semibold mt-2">Vai trò của cytokine và con đường tín hiệu:</p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>$TNF-\alpha$: Thúc đẩy viêm và tăng sinh tế bào.</li>
+                            <li>IL-17A (từ Th17): Kích thích KCs tăng sinh, sản xuất peptide kháng khuẩn, thu hút bạch cầu trung tính.</li>
+                            <li>IL-23: Quan trọng cho sự phát triển và hoạt hóa Th17 (trục IL-23/Th17 là trung tâm).</li>
+                            <li>$IFN-\gamma$ (từ Th1): Góp phần vào viêm và tăng sinh KCs.</li>
+                            <li>Khác: IL-22, IL-6, $IL-1\beta$, IL-36.</li>
+                        </ul>
+                         <p class="font-semibold mt-2">Sơ đồ đơn giản hóa vai trò hệ miễn dịch:</p>
+                        <div class="mt-2 p-3 border border-teal-200 rounded-md bg-teal-50 text-sm">
+                            <p class="text-center">Tế bào sừng (KCs) bị kích hoạt <span class="text-teal-600 font-bold">&rarr;</span> Giải phóng tín hiệu</p>
+                            <p class="text-center"><span class="text-teal-600 font-bold">&darr;</span></p>
+                            <p class="text-center">Tế bào đuôi gai (DCs) trưởng thành & kích hoạt <span class="text-teal-600 font-bold">&rarr;</span> Trình diện kháng nguyên</p>
+                            <p class="text-center"><span class="text-teal-600 font-bold">&darr;</span></p>
+                            <p class="text-center">Tế bào T được hoạt hóa <span class="text-teal-600 font-bold">&rarr;</span> Giải phóng Cytokines (ví dụ: $TNF-\alpha$, IL-17, IL-23)</p>
+                            <p class="text-center"><span class="text-teal-600 font-bold">&darr;</span></p>
+                            <p class="text-center">KCs tăng sinh & Viêm <span class="text-teal-600 font-bold">&circlearrowleft;</span> (Vòng xoắn bệnh lý)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold text-teal-600 mb-3 accordion-trigger cursor-pointer flex justify-between items-center">
+                        <span>B. Yếu Tố Di Truyền</span>
+                        <span class="arrow transform transition-transform duration-300">▼</span>
+                    </h3>
+                    <div class="accordion-content">
+                        <p class="mb-2">Yếu tố di truyền đóng góp 60-90% nguy cơ. Nguy cơ mắc bệnh cao hơn nếu có người thân mắc bệnh.</p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>Cả cha và mẹ mắc bệnh: con có 50% nguy cơ.</li>
+                            <li>Một cha hoặc mẹ mắc bệnh: con có 16% nguy cơ.</li>
+                            <li>Song sinh cùng trứng: tỷ lệ tương hợp 35-72%.</li>
+                            <li>Song sinh khác trứng: tỷ lệ tương hợp 15-23%.</li>
+                        </ul>
+                        <p class="font-semibold mt-2">Gen liên quan:</p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>$HLA-Cw6$: Gen nhạy cảm quan trọng, đặc biệt với vảy nến khởi phát sớm và thể giọt.</li>
+                            <li>GWAS xác định nhiều locus gen khác liên quan đến điều hòa miễn dịch (IL-23/Th17).</li>
+                        </ul>
+                        <p class="font-semibold mt-2">Kiểu khởi phát:</p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>Type I (sớm, trước 40 tuổi): Liên quan $HLA-Cw6$, nặng hơn.</li>
+                            <li>Type II (muộn, sau 40 tuổi): Nhẹ hơn, ít liên quan di truyền.</li>
+                        </ul>
+                        <div class="mt-4 chart-container">
+                            <canvas id="geneticRiskChart"></canvas>
+                        </div>
+                         <p class="mt-4 text-sm text-gray-600 text-center">Biểu đồ minh họa nguy cơ di truyền bệnh vảy nến.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold text-teal-600 mb-3 accordion-trigger cursor-pointer flex justify-between items-center">
+                        <span>C. Các Yếu Tố Khởi Phát và Môi Trường</span>
+                        <span class="arrow transform transition-transform duration-300">▼</span>
+                    </h3>
+                    <div class="accordion-content">
+                        <p class="mb-3">Các yếu tố này có thể kích hoạt đợt bệnh mới hoặc làm nặng thêm tình trạng hiện có ở người có cơ địa di truyền.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="border p-3 rounded-md bg-stone-50">
+                                <h4 class="font-semibold text-amber-700">Nhiễm trùng</h4>
+                                <p class="text-sm">Liên cầu khuẩn (viêm họng) &rarr; vảy nến thể giọt. HIV, nhiễm trùng da khác.</p>
+                            </div>
+                            <div class="border p-3 rounded-md bg-stone-50">
+                                <h4 class="font-semibold text-amber-700">Chấn thương da (Koebner)</h4>
+                                <p class="text-sm">Vết cắt, trầy, bỏng, xăm mình &rarr; tổn thương mới sau 1-2 tuần.</p>
+                            </div>
+                            <div class="border p-3 rounded-md bg-stone-50">
+                                <h4 class="font-semibold text-amber-700">Stress tâm lý</h4>
+                                <p class="text-sm">Căng thẳng kéo dài có thể làm rối loạn hệ miễn dịch.</p>
+                            </div>
+                            <div class="border p-3 rounded-md bg-stone-50">
+                                <h4 class="font-semibold text-amber-700">Thuốc</h4>
+                                <p class="text-sm">Corticosteroid (ngừng đột ngột), chẹn beta, lithium, chống sốt rét, NSAIDs.</p>
+                            </div>
+                            <div class="border p-3 rounded-md bg-stone-50">
+                                <h4 class="font-semibold text-amber-700">Lối sống</h4>
+                                <p class="text-sm">Hút thuốc lá, lạm dụng rượu bia làm tăng nguy cơ và độ nặng.</p>
+                            </div>
+                            <div class="border p-3 rounded-md bg-stone-50">
+                                <h4 class="font-semibold text-amber-700">Thay đổi nội tiết tố</h4>
+                                <p class="text-sm">Dậy thì, mãn kinh. Cải thiện khi mang thai, tái phát sau sinh.</p>
+                            </div>
+                             <div class="border p-3 rounded-md bg-stone-50">
+                                <h4 class="font-semibold text-amber-700">Thời tiết</h4>
+                                <p class="text-sm">Lạnh, khô làm bệnh nặng hơn. Ánh nắng (UV) thường có lợi, nhưng cháy nắng có thể kích hoạt.</p>
+                            </div>
+                            <div class="border p-3 rounded-md bg-stone-50">
+                                <h4 class="font-semibold text-amber-700">Béo phì</h4>
+                                <p class="text-sm">Tăng nguy cơ và triệu chứng có thể nặng hơn.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-lesions" class="tab-content">
+            <h2 class="text-2xl font-semibold text-teal-700 mb-4">Các Thương Tổn Cơ Bản</h2>
+            <p class="section-intro">
+                Phần này mô tả chi tiết các biểu hiện lâm sàng đặc trưng của bệnh vảy nến trên da và móng. Việc nhận diện chính xác các thương tổn này, cùng với các dấu hiệu đặc hiệu khi thăm khám, là rất quan trọng để định hướng chẩn đoán.
+            </p>
+            <div class="space-y-6">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold text-teal-600 mb-3 accordion-trigger cursor-pointer flex justify-between items-center">
+                        <span>A. Thương Tổn Da</span>
+                        <span class="arrow transform transition-transform duration-300">▼</span>
+                    </h3>
+                    <div class="accordion-content">
+                        <p class="font-semibold">Mô tả đại thể:</p>
+                        
+                        <ul class="list-disc list-inside ml-4">
+                            <li><strong>Dát đỏ:</strong> Nền tảng, màu hồng/đỏ (da trắng) hoặc tím/nâu/xám (da sẫm màu). Ranh giới rõ. Kích thước đa dạng.</li>
+                            <li><strong>Vảy:</strong> Nhiều lớp vảy khô, trắng bạc óng ánh hoặc xám, dễ bong.</li>
+                                                    <img src="https://login.medlatec.vn//ImagePath/images/20210825/20210825_vay-nen.jpg" alt="Hình ảnh minh họa mảng vảy nến" class="w-full sm:w-1/2 md:w-1/3 h-auto rounded-md shadow-md object-cover" 
+
+                        </ul>
+                        <div class="my-4 p-4 border border-stone-200 rounded-md bg-stone-50">
+                            <h4 class="font-semibold text-teal-700 mb-2">Hình dung tổn thương da điển hình:</h4>
+                            <p class="text-sm text-stone-700">Một mảng da nổi cao, có ranh giới rõ ràng, màu đỏ và phủ nhiều lớp vảy trắng bạc, dễ bong.</p>
+                        </div>
+                        <p class="font-semibold mt-2">Dấu hiệu đặc trưng khi thăm khám:</p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li><strong>Nghiệm pháp Brocq:</strong> Cạo nhẹ mảng vảy nến:
+                                <ol class="list-decimal list-inside ml-6">
+                                    <li>Dấu hiệu vết nến: Vảy bong như sáp nến.</li>
+                                    <li>Dấu hiệu màng bong: Lộ ra lớp màng mỏng, bóng.</li>
+                                    <li>Dấu hiệu giọt sương máu (Auspitz): Xuất huyết lấm tấm khi cạo lớp màng.</li>
+                                </ol>
+                            </li>
+                            <li><strong>Hiện tượng Koebner:</strong> Tổn thương mới xuất hiện tại vùng da bị chấn thương (cào, cắt) sau 1-2 tuần.</li>
+                        </ul>
+                        <p class="font-semibold mt-2">Triệu chứng cơ năng:</p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>Ngứa (mức độ thay đổi).</li>
+                            <li>Đau, rát (đặc biệt khi nứt nẻ).</li>
+                            <li>Da khô, nứt nẻ.</li>
+                        </ul>
+                        <p class="font-semibold mt-2">Vị trí thường gặp:</p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>Mặt duỗi khuỷu tay, đầu gối.</li>
+                            <li>Da đầu (chân tóc, trán, sau tai, gáy).</li>
+                            <li>Vùng thắt lưng cùng.</li>
+                            <li>Đối xứng hai bên.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold text-teal-600 mb-3 accordion-trigger cursor-pointer flex justify-between items-center">
+                        <span>B. Thương Tổn Móng</span>
+                        <span class="arrow transform transition-transform duration-300">▼</span>
+                    </h3>
+                    <div class="accordion-content">
+                        <p class="mb-2">Ảnh hưởng 30-50% bệnh nhân, cao hơn ở thể mảng (80-90%) và viêm khớp vảy nến. Có thể là biểu hiện duy nhất.</p>
+                        <p class="font-semibold">Các thay đổi ở móng:</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                            <div class="p-3 border rounded-md bg-stone-50"><strong>Rỗ móng (Pitting):</strong> Vết lõm nhỏ như đầu kim trên bề mặt móng.</div>
+                            <div class="p-3 border rounded-md bg-stone-50"><strong>Dày sừng dưới móng:</strong> Tích tụ vảy da dưới bờ tự do, làm móng đội lên.</div>
+                            <div class="p-3 border rounded-md bg-stone-50"><strong>Bong móng (Onycholysis):</strong> Móng tách khỏi giường móng từ bờ tự do.</div>
+                            <div class="p-3 border rounded-md bg-stone-50"><strong>Đổi màu móng:</strong> Vàng, nâu, trắng đục.</div>
+                            <div class="p-3 border rounded-md bg-stone-50"><strong>Dấu hiệu giọt dầu (Salmon patch):</strong> Đốm vàng nâu/hồng cá hồi dưới phiến móng.</div>
+                            <div class="p-3 border rounded-md bg-stone-50"><strong>Khác:</strong> Móng giòn, dễ gãy, mủn, mất bóng, vân ngang/dọc, xuất huyết dạng dăm.</div>
+                        </div>
+                        <p class="mt-3 text-sm text-red-600"><strong>Lưu ý:</strong> Tổn thương móng có thể là dấu hiệu sớm của viêm khớp vảy nến. Cần kiểm tra kỹ lưỡng.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-forms" class="tab-content">
+            <h2 class="text-2xl font-semibold text-teal-700 mb-4">Đặc Điểm Của Các Thể Vảy Nến</h2>
+            <p class="section-intro">
+                Bệnh vảy nến có nhiều thể lâm sàng khác nhau, mỗi thể có những đặc điểm riêng về hình thái, vị trí, yếu tố khởi phát và tiên lượng. Phần này sẽ giới thiệu chi tiết về các thể thường gặp, giúp bạn nhận diện và hiểu rõ hơn về sự đa dạng của bệnh.
+            </p>
+            <div class="mb-6 chart-container">
+                <canvas id="psoriasisFormsChart"></canvas>
+            </div>
+            <p class="mb-6 text-sm text-gray-600 text-center">Biểu đồ tỷ lệ mắc ước tính của các thể vảy nến chính.</p>
+
+            <div class="space-y-4">
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h4 class="font-semibold text-lg text-amber-700 accordion-trigger cursor-pointer flex justify-between items-center">
+                        <span>1. Vảy Nến Thể Mảng (Plaque Psoriasis)</span>
+                        <span class="arrow transform transition-transform duration-300">▼</span>
+                    </h4>
+                    <div class="accordion-content mt-2 text-sm">
+                        <p><strong>Tỷ lệ:</strong> ~80-90% (phổ biến nhất).</p>
+                        <p><strong>Tổn thương:</strong> Mảng da đỏ, giới hạn rõ, nổi cao, vảy trắng bạc dày, nhiều lớp. Đối xứng.</p>
+                        <p><strong>Vị trí:</strong> Khuỷu tay, đầu gối, da đầu, vùng thắt lưng cùng.</p>
+                        <p><strong>Triệu chứng:</strong> Ngứa (50%), đau, rát, khô da, nứt nẻ.</p>
+                        <p><strong>Khởi phát:</strong> Di truyền, stress, chấn thương, thuốc, nhiễm trùng.</p>
+                        <p><strong>Tiến triển:</strong> Mạn tính, có đợt bùng phát và thuyên giảm.</p>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h4 class="font-semibold text-lg text-amber-700 accordion-trigger cursor-pointer flex justify-between items-center">
+                        <span>2. Vảy Nến Thể Giọt (Guttate Psoriasis)</span>
+                        <span class="arrow transform transition-transform duration-300">▼</span>
+                    </h4>
+                    <div class="accordion-content mt-2 text-sm">
+                        <p><strong>Tỷ lệ:</strong> ~8-10%. Thường ở trẻ em, người trẻ.</p>
+                        <p><strong>Tổn thương:</strong> Đốm/sẩn nhỏ (2-10mm) hình giọt nước, màu hồng/đỏ, vảy mỏng, rải rác.</p>
+                        <p><strong>Vị trí:</strong> Thân mình, tay, chân. Ít khi ở lòng bàn tay/chân, móng.</p>
+                        <p><strong>Triệu chứng:</strong> Thường ngứa.</p>
+                        <p><strong>Khởi phát đặc trưng:</strong> Nhiễm liên cầu khuẩn (viêm họng) 1-3 tuần trước đó.</p>
+                        <p><strong>Tiến triển:</strong> Có thể tự khỏi sau vài tuần/tháng. Khoảng 1/3 tiến triển thành thể mảng.</p>
+                    </div>
+                </div>
+                 <div class="bg-white p-4 rounded-lg shadow">
+                    <h4 class="font-semibold text-lg text-amber-700 accordion-trigger cursor-pointer flex justify-between items-center">
+                        <span>3. Vảy Nến Thể Mủ (Pustular Psoriasis)</span>
+                        <span class="arrow transform transition-transform duration-300">▼</span>
+                    </h4>
+                    <div class="accordion-content mt-2 text-sm">
+                        <p><strong>Tỷ lệ:</strong> Hiếm, ~1-3%. Thường ở người lớn.</p>
+                        <p><strong>Đặc điểm chung:</strong> Mụn mủ nhỏ, nông, vô khuẩn trên nền da đỏ viêm. Có thể liên kết thành "hồ mủ".</p>
+                        <ul class="list-disc list-inside ml-4 mt-2">
+                            <li><strong>Vảy nến mủ toàn thân (GPP / von Zumbusch):</strong> Nặng, cấp tính, đe dọa tính mạng. Mụn mủ lan tỏa, sốt cao, rét run, mệt mỏi. Cần cấp cứu. Khởi phát do ngừng đột ngột steroid, nhiễm trùng, thuốc, thai kỳ, đột biến gen $IL36RN$.</li>
+                            <li><strong>Vảy nến mủ lòng bàn tay - bàn chân (PPP / Barber):</strong> Mụn mủ khu trú ở lòng bàn tay/chân, đối xứng. Da dày, đỏ, nứt nẻ. Liên quan hút thuốc.</li>
+                            <li><strong>Vảy nến mủ đầu chi (Acrodermatitis Continua of Hallopeau):</strong> Hiếm, khó trị. Mụn mủ ở đầu ngón tay/chân, quanh/dưới móng. Gây tổn thương móng nặng, teo da, tiêu xương.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h4 class="font-semibold text-lg text-amber-700 accordion-trigger cursor-pointer flex justify-between items-center">
+                        <span>4. Vảy Nến Đỏ Da Toàn Thân (Erythrodermic Psoriasis)</span>
+                        <span class="arrow transform transition-transform duration-300">▼</span>
+                    </h4>
+                    <div class="accordion-content mt-2 text-sm">
+                        <p><strong>Tỷ lệ:</strong> Hiếm, ~1-2%. Rất nặng.</p>
+                        <p><strong>Tổn thương:</strong> Da đỏ lan tỏa >90% diện tích, bong vảy nhiều, phù nề, căng bóng, nứt nẻ, đau rát. Có thể rụng tóc, tổn thương niêm mạc, móng biến dạng.</p>
+                        <p><strong>Triệu chứng toàn thân:</strong> Sốt, rét run, mất nước, mất protein, rối loạn điện giải, rối loạn thân nhiệt, nguy cơ suy tim, nhiễm khuẩn huyết. Cần cấp cứu.</p>
+                        <p><strong>Khởi phát:</strong> Điều trị không phù hợp (ngừng đột ngột steroid), nhiễm trùng nặng, stress. Có thể phát triển từ bất kỳ thể nào.</p>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h4 class="font-semibold text-lg text-amber-700 accordion-trigger cursor-pointer flex justify-between items-center">
+                        <span>5. Vảy Nến Thể Đảo Ngược (Inverse/Flexural Psoriasis)</span>
+                        <span class="arrow transform transition-transform duration-300">▼</span>
+                    </h4>
+                    <div class="accordion-content mt-2 text-sm">
+                        <p><strong>Đặc điểm:</strong> Mảng đỏ tươi, bề mặt nhẵn bóng, giới hạn rõ, thường không có vảy hoặc vảy mỏng (do ẩm, cọ xát). Da ẩm ướt, dễ nứt, trợt loét.</p>
+                        <p><strong>Vị trí:</strong> Nếp gấp (nách, bẹn, dưới vú, mông, sinh dục, rốn).</p>
+                        <p><strong>Triệu chứng:</strong> Ngứa, đau rát.</p>
+                        <p><strong>Liên quan:</strong> Thường gặp ở người béo phì. Dễ bội nhiễm nấm/vi khuẩn.</p>
+                        <p><strong>Chẩn đoán phân biệt:</strong> Hăm kẽ do nấm, viêm da tiếp xúc, chàm.</p>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h4 class="font-semibold text-lg text-amber-700 accordion-trigger cursor-pointer flex justify-between items-center">
+                        <span>6. Viêm Khớp Vảy Nến (Psoriatic Arthritis - PsA)</span>
+                        <span class="arrow transform transition-transform duration-300">▼</span>
+                    </h4>
+                    <div class="accordion-content mt-2 text-sm">
+                        <p><strong>Tỷ lệ:</strong> ~10-30% bệnh nhân vảy nến. Viêm khớp mạn tính, huyết thanh âm tính.</p>
+                        <p><strong>Liên quan da/móng:</strong> Tổn thương da thường xuất hiện trước. Tổn thương móng gặp ở ~80% ca PsA.</p>
+                        <p><strong>Các thể lâm sàng:</strong></p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li>Viêm một/vài khớp không đối xứng (thường gặp nhất).</li>
+                            <li>Viêm đa khớp đối xứng (giống viêm khớp dạng thấp).</li>
+                            <li>Viêm khớp trục (cột sống, khớp cùng chậu).</li>
+                            <li>Viêm khớp ngón xa (DIP).</li>
+                            <li>Viêm khớp biến dạng nặng (Arthritis mutilans - hiếm, phá hủy nặng).</li>
+                        </ul>
+                        <p><strong>Dấu hiệu đặc trưng:</strong></p>
+                        <ul class="list-disc list-inside ml-4">
+                            <li><strong>Viêm ngón (Dactylitis):</strong> Ngón sưng hình "khúc dồi".</li>
+                            <li><strong>Viêm điểm bám gân (Enthesitis):</strong> Viêm nơi gân/dây chằng bám vào xương (gót chân, lòng bàn chân).</li>
+                        </ul>
+                        <p><strong>Triệu chứng:</strong> Đau khớp, cứng khớp (sáng/sau nghỉ), sưng, nóng, đỏ khớp, hạn chế vận động.</p>
+                        <p><strong>Biến chứng ngoài khớp:</strong> Viêm màng bồ đào, bệnh viêm ruột, tăng nguy cơ tim mạch.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-treatment" class="tab-content">
+            <h2 class="text-2xl font-semibold text-teal-700 mb-4">Các Phương Pháp Điều Trị Bệnh Vảy Nến</h2>
+            <p class="section-intro">
+                Mặc dù chưa có phương pháp chữa khỏi hoàn toàn, nhiều lựa chọn điều trị hiệu quả giúp kiểm soát triệu chứng, làm sạch tổn thương và cải thiện chất lượng cuộc sống. Phần này sẽ trình bày các nguyên tắc chung và các nhóm điều trị chính, từ thuốc bôi tại chỗ, quang trị liệu, thuốc toàn thân cổ điển đến các liệu pháp sinh học tiên tiến, cùng với các biện pháp hỗ trợ thay đổi lối sống.
+            </p>
+            <div class="mb-6 chart-container">
+                 <canvas id="treatmentComparisonChart"></canvas>
+            </div>
+            <p class="mb-6 text-sm text-gray-600 text-center">Biểu đồ minh họa (mang tính khái niệm) so sánh hiệu quả và nguy cơ tác dụng phụ của các nhóm điều trị chính.</p>
+
+            <div class="space-y-6">
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold text-teal-600 mb-3 accordion-trigger cursor-pointer flex justify-between items-center">
+                        <span>A. Nguyên Tắc Chung Trong Điều Trị</span>
+                        <span class="arrow transform transition-transform duration-300">▼</span>
+                    </h3>
+                    <div class="accordion-content">
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li><strong>Mục tiêu:</strong> Kiểm soát triệu chứng, làm sạch tổn thương, cải thiện chất lượng cuộc sống, ngăn ngừa biến chứng, duy trì thuyên giảm.</li>
+                            <li><strong>Cá nhân hóa:</strong> Dựa trên thể bệnh, độ nặng, vị trí, tuổi, bệnh đồng mắc, đáp ứng trước đó, mong muốn bệnh nhân.</li>
+                            <li><strong>Điều trị bậc thang:</strong> Bắt đầu từ ít xâm lấn (thuốc bôi) cho bệnh nhẹ, tăng dần (quang trị liệu, toàn thân) cho bệnh nặng hơn/không đáp ứng.</li>
+                            <li><strong>Quản lý bệnh đồng mắc:</strong> Viêm khớp, tim mạch, đái tháo đường, trầm cảm.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold text-teal-600 mb-3 accordion-trigger cursor-pointer flex justify-between items-center">
+                        <span>B. Điều Trị Tại Chỗ (Topical Treatments)</span>
+                        <span class="arrow transform transition-transform duration-300">▼</span>
+                    </h3>
+                    <div class="accordion-content">
+                        <p class="mb-2">Nền tảng cho bệnh nhẹ-trung bình; phối hợp trong bệnh nặng.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                            <div><strong>Corticosteroid:</strong> Chống viêm, ức chế miễn dịch, giảm tăng sinh KCs. Nhiều hiệu lực. TD phụ: teo da, rạn da. (VD: Dermovate)</div>
+                            <div><strong>Dẫn xuất Vitamin D3:</strong> Điều hòa tăng sinh & biệt hóa KCs. TD phụ: kích ứng da. (VD: Calcipotriol, Calcitriol)</div>
+                            <div><strong>Retinoid:</strong> Điều hòa phát triển & biệt hóa tế bào da, giảm viêm. TD phụ: kích ứng, nhạy cảm ánh sáng, chống chỉ định thai kỳ. (VD: Tazarotene)</div>
+                            <div><strong>Ức chế Calcineurin (TCIs):</strong> Ức chế hoạt hóa tế bào T. Hữu ích cho vùng da nhạy cảm (mặt, nếp gấp). TD phụ: nóng rát, ngứa ban đầu. (VD: Tacrolimus, Pimecrolimus)</div>
+                            <div><strong>Acid Salicylic:</strong> Tiêu sừng, làm bong vảy, giúp thuốc khác thấm tốt hơn. TD phụ: kích ứng, khô da.</div>
+                            <div><strong>Hắc ín (Coal Tar):</strong> Giảm tăng sinh KCs, giảm viêm, ngứa. TD phụ: mùi khó chịu, bẩn quần áo, nhạy cảm ánh sáng.</div>
+                            <div><strong>Anthralin (Dithranol):</strong> Giảm tăng sinh KCs, loại bỏ vảy. TD phụ: kích ứng mạnh, nhuộm màu da/quần áo.</div>
+                            <div><strong>Chất làm mềm da (Emollients):</strong> Rất quan trọng. Giữ ẩm, giảm khô, ngứa, nứt nẻ, phục hồi hàng rào da. Dùng thường xuyên.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold text-teal-600 mb-3 accordion-trigger cursor-pointer flex justify-between items-center">
+                        <span>C. Quang Trị Liệu (Phototherapy)</span>
+                        <span class="arrow transform transition-transform duration-300">▼</span>
+                    </h3>
+                    <div class="accordion-content">
+                        <p class="mb-2">Sử dụng tia UV có kiểm soát cho bệnh trung bình-nặng, lan tỏa, không đáp ứng thuốc bôi.</p>
+                        <ul class="list-disc list-inside ml-4 space-y-1">
+                            <li><strong>Cơ chế:</strong> Ức chế tổng hợp DNA, làm chậm tăng sinh KCs, điều hòa miễn dịch tại chỗ.</li>
+                            <li><strong>NB-UVB (UVB phổ hẹp):</strong> Phổ biến nhất, hiệu quả cao, an toàn tương đối. Bước sóng 311-313nm.</li>
+                            <li><strong>PUVA (Psoralen + UVA):</strong> Hiệu quả cao cho ca nặng, nhưng nhiều TD phụ (bỏng nắng, buồn nôn, nguy cơ ung thư da, lão hóa da).</li>
+                            <li><strong>Laser Excimer:</strong> Tia UVB 308nm, chiếu tập trung vào mảng khu trú, ít ảnh hưởng da lành.</li>
+                            <li><strong>TD phụ chung:</strong> Bỏng nắng, ngứa, khô da. Lâu dài: lão hóa da, tăng nguy cơ ung thư da.</li>
+                        </ul>
+                    </div>
+                </div>
+                 <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold text-teal-600 mb-3 accordion-trigger cursor-pointer flex justify-between items-center">
+                        <span>D. Điều Trị Toàn Thân (Systemic Treatments)</span>
+                        <span class="arrow transform transition-transform duration-300">▼</span>
+                    </h3>
+                    <div class="accordion-content">
+                        <p class="mb-2">Cho bệnh trung bình-nặng, lan tỏa, thể nặng (viêm khớp, thể mủ, đỏ da), không đáp ứng liệu pháp khác.</p>
+                        
+                        <h5 class="font-semibold mt-3 mb-1 text-amber-700">1. Thuốc Cổ Điển:</h5>
+                        <ul class="list-disc list-inside ml-4 space-y-1 text-sm">
+                            <li><strong>Methotrexate (MTX):</strong> Kháng acid folic, ức chế tổng hợp DNA, ức chế miễn dịch. Uống/tiêm 1 lần/tuần. TD phụ: buồn nôn, loét miệng, ức chế tủy, độc gan. Chống chỉ định thai kỳ.</li>
+                            <li><strong>Cyclosporine (CSA):</strong> Ức chế miễn dịch mạnh (tế bào T). Uống hàng ngày. Tác dụng nhanh cho ca nặng. TD phụ: độc thận, tăng huyết áp, tăng nguy cơ nhiễm trùng/ung thư. Dùng ngắn hạn.</li>
+                            <li><strong>Acitretin:</strong> Retinoid uống, điều hòa tăng sinh KCs. Hữu ích cho thể mủ, đỏ da, lòng bàn tay-chân. TD phụ: khô da/môi/mắt, tăng lipid máu, độc gan, QUÁI THAI MẠNH (chống chỉ định thai kỳ, tránh thai 3 năm sau ngừng).</li>
+                            <li><strong>Apremilast:</strong> Ức chế PDE4, điều hòa cytokine. Uống hàng ngày. TD phụ: rối loạn tiêu hóa (ban đầu), đau đầu. Ít cần theo dõi máu.</li>
+                        </ul>
+
+                        <h5 class="font-semibold mt-4 mb-1 text-amber-700">2. Liệu Pháp Sinh Học (Biologics):</h5>
+                         <p class="text-sm mb-2">Bước tiến lớn cho ca nặng/kháng trị. Nhắm mục tiêu đặc hiệu vào thành phần miễn dịch ($TNF-\alpha$, IL-12/23, IL-17, IL-23, IL-36).</p>
+                        <ul class="list-disc list-inside ml-4 space-y-1 text-sm">
+                            <li><strong>Chỉ định:</strong> Vảy nến mảng trung bình-nặng không đáp ứng/chống chỉ định liệu pháp khác; viêm khớp vảy nến.</li>
+                            <li><strong>Ưu điểm:</strong> Hiệu quả rất cao, tác dụng nhanh, cải thiện chất lượng cuộc sống. Ít TD phụ toàn thân không mong muốn hơn thuốc cổ điển.</li>
+                            <li><strong>Nhược điểm:</strong> Chi phí cao, đường tiêm. Tăng nguy cơ nhiễm trùng (cần sàng lọc lao, viêm gan). Phản ứng tại chỗ tiêm, hình thành kháng thể.</li>
+                            <li><strong>Ví dụ nhóm thuốc:</strong> Ức chế $TNF-\alpha$ (Etanercept, Adalimumab), IL-12/23 (Ustekinumab), IL-17 (Secukinumab, Ixekizumab), IL-23 (Guselkumab, Risankizumab), IL-36 (Spesolimab).</li>
+                        </ul>
+                    </div>
+                </div>
+                 <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-xl font-semibold text-teal-600 mb-3 accordion-trigger cursor-pointer flex justify-between items-center">
+                        <span>E. Thay Đổi Lối Sống và Biện Pháp Hỗ Trợ</span>
+                        <span class="arrow transform transition-transform duration-300">▼</span>
+                    </h3>
+                    <div class="accordion-content">
+                        <ul class="list-disc list-inside ml-4 space-y-2">
+                            <li><strong>Chăm sóc da:</strong> Dưỡng ẩm thường xuyên, tắm nước ấm (không nóng), xà phòng dịu nhẹ, tránh cào gãi.</li>
+                            <li><strong>Chế độ ăn uống:</strong> Cân nhắc tránh thực phẩm nghi ngờ kích ứng (gluten, sữa, cay nóng, rượu bia), tăng cường thực phẩm chống viêm (cá béo, rau xanh). Thảo luận với bác sĩ.</li>
+                            <li><strong>Kiểm soát stress:</strong> Thiền, yoga, tập thể dục, sở thích cá nhân.</li>
+                            <li><strong>Tránh yếu tố khởi phát:</strong> Hút thuốc, rượu bia, một số thuốc.</li>
+                            <li><strong>Bảo vệ da khỏi nắng gắt:</strong> Dù UV có lợi, cháy nắng có thể làm bùng phát bệnh.</li>
+                            <li><strong>Tập thể dục & duy trì cân nặng:</strong> Béo phì là yếu tố nguy cơ.</li>
+                            <li><strong>Hỗ trợ tâm lý:</strong> Quan trọng do bệnh mạn tính, ảnh hưởng ngoại hình và tâm lý. Tìm sự chia sẻ từ gia đình, bạn bè, chuyên gia, nhóm hỗ trợ.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-teal-800 text-white text-center p-6 mt-8">
+        <p class="text-sm">&copy; 2025 Thông Tin Y Khoa Về Bệnh Vảy Nến. Nội dung chỉ mang tính tham khảo, luôn tham vấn ý kiến bác sĩ.</p>
+    </footer>
+
+    <script>
+        function openTab(event, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            
+            const activeTabElement = document.getElementById(tabName);
+            activeTabElement.style.display = "block";
+            activeTabElement.classList.add("active");
+            event.currentTarget.classList.add("active");
+            
+            window.scrollTo({ top: document.querySelector('nav').offsetHeight, behavior: 'smooth' });
+
+            // Initialize charts if the tab contains them and they haven't been initialized
+            if (tabName === 'tab-pathophysiology' && !window.geneticRiskChartInstance) {
+                renderGeneticRiskChart();
+            }
+            if (tabName === 'tab-forms' && !window.psoriasisFormsChartInstance) {
+                renderPsoriasisFormsChart();
+            }
+            if (tabName === 'tab-treatment' && !window.treatmentComparisonChartInstance) {
+                renderTreatmentComparisonChart();
+            }
+
+            // Retypeset MathJax content for the newly displayed tab
+            if (typeof MathJax !== "undefined" && typeof MathJax.typesetPromise === "function") {
+                MathJax.typesetPromise([activeTabElement]).catch(function (err) {
+                    console.error('MathJax typesetting error on tab change:', err);
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Ensure the first tab's MathJax content is typeset after initial display
+            const firstTabButton = document.querySelector('.tab-button');
+            if (firstTabButton) {
+                 firstTabButton.click(); // Open first tab
+            }
+
+            const accordionTriggers = document.querySelectorAll('.accordion-trigger');
+            accordionTriggers.forEach(trigger => {
+                trigger.addEventListener('click', function() {
+                    const content = this.nextElementSibling;
+                    const isOpen = content.classList.contains('open');
+                    content.classList.toggle('open');
+                    const arrow = this.querySelector('.arrow');
+                    if (arrow) {
+                        arrow.classList.toggle('rotate-180');
+                    }
+                    // If accordion is opening, re-typeset its content
+                    if (!isOpen && typeof MathJax !== "undefined" && typeof MathJax.typesetPromise === "function") {
+                         MathJax.typesetPromise([content]).catch(function (err) {
+                            console.error('MathJax typesetting error on accordion open:', err);
+                        });
+                    }
+                });
+            });
+        });
+
+        // Initial typesetting for content visible on load (e.g. if no tabs, or for the default tab before click simulation)
+        // This might be redundant if the first tab click handles it, but can be a fallback.
+        if (typeof MathJax !== "undefined" && typeof MathJax.startup !== "undefined" && typeof MathJax.startup.promise !== "undefined") {
+            MathJax.startup.promise.then(() => {
+                // console.log('MathJax initial typesetting.');
+                // MathJax.typesetPromise().catch(function(err){
+                // console.error('MathJax initial typesetting error:', err);
+                // });
+                // The above general typesetPromise() might be too broad or run too early.
+                // Relying on the first tab click to typeset its specific content is more targeted.
+            });
+        }
+
+
+        function renderGeneticRiskChart() {
+            const ctx = document.getElementById('geneticRiskChart').getContext('2d');
+            window.geneticRiskChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['1 Phụ Huynh Mắc Bệnh', 'Cả 2 Phụ Huynh Mắc Bệnh'],
+                    datasets: [{
+                        label: 'Nguy Cơ Con Mắc Bệnh (%)',
+                        data: [16, 50],
+                        backgroundColor: ['rgba(251, 146, 60, 0.7)', 'rgba(239, 68, 68, 0.7)'], // amber-500, red-500
+                        borderColor: ['rgba(251, 146, 60, 1)', 'rgba(239, 68, 68, 1)'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 60,
+                            title: { display: true, text: 'Tỷ lệ %' }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Nguy Cơ Di Truyền Bệnh Vảy Nến',
+                            font: { size: 16 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + context.raw + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderPsoriasisFormsChart() {
+            const ctx = document.getElementById('psoriasisFormsChart').getContext('2d');
+            window.psoriasisFormsChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Thể Mảng', 'Thể Giọt', 'Thể Mủ', 'Đỏ Da Toàn Thân', 'Viêm Khớp (trong số BN vảy nến)'],
+                    datasets: [{
+                        label: 'Tỷ Lệ Mắc Ước Tính (%)',
+                        data: [85, 9, 2, 1.5, 20], // Note: PsA is 10-30% of psoriasis patients, not mutually exclusive of skin form. Representing as 20 for illustration.
+                        backgroundColor: [
+                            'rgba(13, 148, 136, 0.7)', // teal-600
+                            'rgba(59, 130, 246, 0.7)', // blue-500
+                            'rgba(239, 68, 68, 0.7)',  // red-500
+                            'rgba(249, 115, 22, 0.7)', // orange-500
+                            'rgba(168, 85, 247, 0.7)'  // purple-500
+                        ],
+                        borderColor: [
+                            'rgba(13, 148, 136, 1)',
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(239, 68, 68, 1)',
+                            'rgba(249, 115, 22, 1)',
+                            'rgba(168, 85, 247, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Tỷ Lệ Mắc Ước Tính Các Thể Vảy Nến Chính',
+                            font: { size: 16 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed !== null) {
+                                        label += context.parsed + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'bottom',
+                             labels: {
+                                boxWidth: 20,
+                                padding: 15,
+                                font: { size: 10 }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function renderTreatmentComparisonChart() {
+            const ctx = document.getElementById('treatmentComparisonChart').getContext('2d');
+            window.treatmentComparisonChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ["Tại Chỗ", "Quang Trị Liệu", "Toàn Thân Cổ Điển", "Toàn Thân Sinh Học"],
+                    datasets: [
+                        {
+                            label: 'Hiệu quả (Khái niệm)',
+                            data: [2, 2.5, 2.5, 3], // 1-Thấp, 2-Trung Bình, 3-Cao
+                            backgroundColor: 'rgba(13, 148, 136, 0.7)', // teal-600
+                            borderColor: 'rgba(13, 148, 136, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Nguy Cơ Tác Dụng Phụ (Khái niệm)',
+                            data: [1, 1.5, 2.5, 2], // 1-Thấp, 2-Trung Bình, 3-Cao
+                            backgroundColor: 'rgba(251, 146, 60, 0.7)', // amber-500
+                            borderColor: 'rgba(251, 146, 60, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 3.5,
+                            ticks: {
+                                stepSize: 0.5,
+                                callback: function(value) {
+                                    if (value === 1) return 'Thấp';
+                                    if (value === 2) return 'Trung Bình';
+                                    if (value === 3) return 'Cao';
+                                    return '';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'So Sánh Khái Niệm Các Nhóm Điều Trị Chính',
+                            font: { size: 16 }
+                        },
+                        tooltip: {
+                             callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    let value = context.parsed.y;
+                                    if (value <= 1) label += 'Thấp';
+                                    else if (value <=2) label += 'Trung bình';
+                                    else label += 'Cao';
+                                    return label;
+                                }
+                            }
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>
